@@ -1,0 +1,44 @@
+
+name: CI - Calidad y seguridad
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  quality:
+    name: Pruebas, cobertura y seguridad
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar pruebas
+        run: npm test
+
+      - name: Medir cobertura
+        run: npm run test:coverage
+
+      - name: Auditar dependencias
+        run: npm audit --audit-level=high
+
+      - name: Guardar reporte de cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-cobertura
+          path: coverage/
