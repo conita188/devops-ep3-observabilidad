@@ -1,0 +1,39 @@
+
+name: Deploy and Measure
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Despliegue Docker Compose
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Verificar Docker Compose
+        run: docker compose version
+
+      - name: Medir tiempo de despliegue
+        run: |
+          START_TIME=$(date +%s)
+
+          docker compose up -d
+
+          docker compose ps
+
+          END_TIME=$(date +%s)
+          DEPLOY_TIME=$((END_TIME - START_TIME))
+
+          echo "Tiempo de despliegue: ${DEPLOY_TIME} segundos"
+
+          mkdir -p deployment-results
+          echo "deployment_time_seconds=${DEPLOY_TIME}" > deployment-results/deployment-time.txt
+
+      - name: Guardar resultado del despliegue
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-time
+          path: deployment-results/deployment-time.txt
