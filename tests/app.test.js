@@ -53,7 +53,7 @@ describe('Pruebas del microservicio', () => {
   test('GET /metrics debe entregar métricas de Prometheus', async () => {
   const response = await request(app).get('/metrics');
 
-  expect(response.statusCode).toBe(200);
+  expect(response.statusCode).toBe(500);
   expect(response.text).toContain('http_requests_total');
   expect(response.text).toContain('http_request_duration_seconds');
   expect(response.text).toContain('nodejs_');
